@@ -135,5 +135,31 @@ namespace VerboseRestSharpTests
 
             Assert.Throws<RequestFailedException>(() => verboseRestClient.ExecuteAndGetRestResponseAsync(request).GetAwaiter().GetResult());
         }
+
+        [Test]
+        public async Task ExecuteAndGetStringAsync_ValidRequest_ReturnsValidStringResponse()
+        {
+            var restClient = new RestClient(TestURl);
+            var verboseRestClient = new VerboseRestClient(restClient);
+
+            var request = new RestRequest(Get);
+            string response = await verboseRestClient.ExecuteAndGetStringAsync(request);
+
+            Assert.IsNotNull(response);
+            Assert.AreNotEqual(string.Empty, response);
+        }
+
+        [Test]
+        public async Task ExecuteAndGetRawBytesAsync_ValidRequest_ReturnsValidByteArray()
+        {
+            var restClient = new RestClient(TestURl);
+            var verboseRestClient = new VerboseRestClient(restClient);
+
+            var request = new RestRequest(Get);
+            byte[] response = await verboseRestClient.ExecuteAndGetRawBytesAsync(request);
+
+            Assert.IsNotNull(response);
+            Assert.AreNotEqual(0, response.Length);
+        }
     }
 }
