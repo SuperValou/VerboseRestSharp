@@ -47,6 +47,66 @@ namespace VerboseRestSharp
                 throw new RequestFailedException($"Exception occured during request execution. Details: {errorMessage}", request, response, e);
             }
 
+            // validate response
+            Validate(request, response);
+
+            return response;
+        }
+
+        public async Task<TObject> ExecuteAndGetAsync<TObject>(IRestRequest request, CancellationToken token = default, bool throwIfNull = true)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            // execute request
+            IRestResponse<TObject> response = null;
+            try
+            {
+                response = await _restClient.ExecuteAsync<TObject>(request);
+            }
+            catch (Exception e)
+            {
+                string errorMessage = BuildDetailedErrorMessage(request, response);
+                throw new RequestFailedException($"Exception occured during request execution. Details: {errorMessage}", request, response, e);
+            }
+
+            // validate response
+            Validate(request, response);
+
+            if (response.Data == null && throwIfNull)
+            {
+                throw new NullResponseObjectException(typeof(TObject));
+            }
+
+            return response.Data;
+        }
+
+        public async Task<string> ExecuteAndGetStringAsync(IRestRequest request, CancellationToken token = default, bool throwIfNull = true)
+        {
+            IRestResponse response = await ExecuteAndGetRestResponseAsync(request, token);
+            if (response.Content == null && throwIfNull)
+            {
+                throw new NullResponseObjectException(typeof(string));
+            }
+
+            return response.Content;
+        }
+
+        public async Task<byte[]> ExecuteAndGetRawBytesAsync(IRestRequest request, CancellationToken token = default, bool throwIfNull = true)
+        {
+            IRestResponse response = await ExecuteAndGetRestResponseAsync(request, token);
+            if (response.RawBytes == null && throwIfNull)
+            {
+                throw new NullResponseObjectException(typeof(byte[])); ;
+            }
+
+            return response.RawBytes;
+        }
+
+        private void Validate(IRestRequest request, IRestResponse response)
+        {
             // ensure response is fine
             if (response == null || response.ResponseStatus != ResponseStatus.Completed)
             {
@@ -91,9 +151,9 @@ namespace VerboseRestSharp
                     case HttpStatusCode.PaymentRequired:
                     case HttpStatusCode.Forbidden:
                     case HttpStatusCode.MethodNotAllowed:
-                    case HttpStatusCode.NotAcceptable: 
+                    case HttpStatusCode.NotAcceptable:
                     case HttpStatusCode.ProxyAuthenticationRequired:
-                    
+
                     case HttpStatusCode.Conflict:
                     case HttpStatusCode.Gone:
                     case HttpStatusCode.LengthRequired:
@@ -102,7 +162,7 @@ namespace VerboseRestSharp
                     case HttpStatusCode.RequestUriTooLong:
                     case HttpStatusCode.UnsupportedMediaType:
                     case HttpStatusCode.RequestedRangeNotSatisfiable:
-                    case HttpStatusCode.ExpectationFailed:                    
+                    case HttpStatusCode.ExpectationFailed:
                     case HttpStatusCode.UpgradeRequired:
                         throw new BadRequestException(errorMessage, request, response);
 
@@ -118,20 +178,6 @@ namespace VerboseRestSharp
 
                 throw new RequestFailedException(errorMessage, request, response, response?.ErrorException);
             }
-
-            return response;
-        }
-
-        public async Task<string> ExecuteAndGetStringAsync(IRestRequest request, CancellationToken token = default)
-        {
-            IRestResponse response = await ExecuteAndGetRestResponseAsync(request, token);
-            return response.Content ?? string.Empty;
-        }
-
-        public async Task<byte[]> ExecuteAndGetRawBytesAsync(IRestRequest request, CancellationToken token = default)
-        {
-            IRestResponse response = await ExecuteAndGetRestResponseAsync(request, token);
-            return response.RawBytes ?? new byte[0];
         }
 
         private string BuildDetailedErrorMessage(IRestRequest restRequest, IRestResponse restResponse)
@@ -183,5 +229,6 @@ namespace VerboseRestSharp
 
             return builder.ToString();
         }
+
     }
 }

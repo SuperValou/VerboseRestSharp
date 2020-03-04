@@ -7,23 +7,19 @@ namespace VerboseRestSharpTests.BadClients
 {
     internal class ThrowingClient : FakeClient
     {   
-        public override IRestResponse Execute(IRestRequest request)
+        public override Task<IRestResponse> ExecuteAsync(IRestRequest request, Method httpMethod, CancellationToken cancellationToken = default)
+        {
+            return Task.Run(() => (IRestResponse) Throw<object>());            
+        }
+
+        private IRestResponse<T> Throw<T>()
         {
             throw new Exception("Exception!");
         }
 
-        public override Task<IRestResponse> ExecuteAsync(IRestRequest request, Method httpMethod, CancellationToken cancellationToken = default)
+        public override Task<IRestResponse<T>> ExecuteAsync<T>(IRestRequest request, CancellationToken cancellationToken = default)
         {
-            return Task.Run(() =>
-            {
-                throw new Exception("Exception!");
-
-                // force lambda to expose its return type
-#pragma warning disable CS0162 // Unreachable code detected
-                IRestResponse response = null;
-#pragma warning restore CS0162 // Unreachable code detected
-                return response;
-            });            
+            return Task.Run(Throw<T>);
         }
     }
 }

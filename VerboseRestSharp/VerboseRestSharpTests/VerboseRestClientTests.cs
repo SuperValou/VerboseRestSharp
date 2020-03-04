@@ -1,11 +1,14 @@
 using NUnit.Framework;
 using RestSharp;
+using RestSharp.Serialization.Xml;
+using RestSharp.Serializers.SystemTextJson;
 using System;
 using System.Net;
 using System.Threading.Tasks;
 using VerboseRestSharp;
 using VerboseRestSharp.Exceptions;
 using VerboseRestSharpTests.BadClients;
+using VerboseRestSharpTests.JsonResponses;
 
 namespace VerboseRestSharpTests
 {
@@ -160,6 +163,20 @@ namespace VerboseRestSharpTests
 
             Assert.IsNotNull(response);
             Assert.AreNotEqual(0, response.Length);
+        }
+
+        [Test]
+        public async Task ExecuteAndGetAsync_ValidRequest_ReturnsValidObject()
+        {
+            var restClient = new RestClient(TestURl);
+            var verboseRestClient = new VerboseRestClient(restClient);
+
+            var request = new RestRequest(Get);
+            var response = await verboseRestClient.ExecuteAndGetAsync<ValidJsonResponse>(request);
+
+            Assert.IsNotNull(response);
+            Assert.IsNotNull(response.Origin);
+            Assert.IsNotNull(response.Url);
         }
     }
 }

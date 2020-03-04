@@ -89,7 +89,10 @@ namespace VerboseRestSharpTests.BadClients
             throw new NotImplementedException();
         }
 
-        public abstract IRestResponse Execute(IRestRequest request);
+        public IRestResponse Execute(IRestRequest request)
+        {
+            throw new NotImplementedException();
+        }
 
         public IRestResponse Execute(IRestRequest request, Method httpMethod)
         {
@@ -126,10 +129,8 @@ namespace VerboseRestSharpTests.BadClients
             throw new NotImplementedException();
         }
 
-        public Task<IRestResponse<T>> ExecuteAsync<T>(IRestRequest request, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract Task<IRestResponse<T>> ExecuteAsync<T>(IRestRequest request, CancellationToken cancellationToken = default);
+        
 
         public Task<IRestResponse<T>> ExecuteAsync<T>(IRestRequest request, Method httpMethod, CancellationToken cancellationToken = default)
         {
