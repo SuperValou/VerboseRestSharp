@@ -14,7 +14,16 @@ namespace VerboseRestSharpTests.BadClients
 
         public override Task<IRestResponse> ExecuteAsync(IRestRequest request, Method httpMethod, CancellationToken cancellationToken = default)
         {
-            throw new Exception("Exception!");
+            return Task.Run(() =>
+            {
+                throw new Exception("Exception!");
+
+                // force lambda to expose its return type
+#pragma warning disable CS0162 // Unreachable code detected
+                IRestResponse response = null;
+#pragma warning restore CS0162 // Unreachable code detected
+                return response;
+            });            
         }
     }
 }

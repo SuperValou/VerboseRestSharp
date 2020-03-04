@@ -16,7 +16,7 @@ namespace VerboseRestSharpTests.BadClients
 
         public override IRestResponse Execute(IRestRequest request)
         {
-            var response = new RestResponse();
+            IRestResponse response = new RestResponse();
             response.StatusCode = _codeToReturn;
             response.ResponseStatus = ResponseStatus.Completed;
             return response;
@@ -24,7 +24,13 @@ namespace VerboseRestSharpTests.BadClients
 
         public override Task<IRestResponse> ExecuteAsync(IRestRequest request, Method httpMethod, CancellationToken cancellationToken = default)
         {
-            throw new System.NotImplementedException();
+            return Task.Run(() =>
+            {
+                IRestResponse response = new RestResponse();
+                response.StatusCode = _codeToReturn;
+                response.ResponseStatus = ResponseStatus.Completed;
+                return response;
+            });
         }
     }
 }

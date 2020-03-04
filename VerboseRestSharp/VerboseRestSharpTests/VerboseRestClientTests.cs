@@ -2,6 +2,7 @@ using NUnit.Framework;
 using RestSharp;
 using System;
 using System.Net;
+using System.Threading.Tasks;
 using VerboseRestSharp;
 using VerboseRestSharp.Exceptions;
 using VerboseRestSharpTests.BadClients;
@@ -12,7 +13,6 @@ namespace VerboseRestSharpTests
     {
         private const string TestURl = @"https://httpbin.org";
         private const string Get = "get";
-         
 
         [Test]
         public void Constructor_NullRestClient_ThrowsException()
@@ -21,25 +21,25 @@ namespace VerboseRestSharpTests
         }
 
         [Test]
-        public void ExecuteAndGetRestResponse_ValidRequest_ReturnsValidResponse()
+        public async Task ExecuteAndGetRestResponseAsync_ValidRequest_ReturnsValidResponse()
         {
             var restClient = new RestClient(TestURl);
             var verboseRestClient = new VerboseRestClient(restClient);
 
             var request = new RestRequest(Get);
-            var response = verboseRestClient.ExecuteAndGetRestResponse(request);
+            var response = await verboseRestClient.ExecuteAndGetRestResponseAsync(request);
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.IsNotNull(response.Content);
         }
 
         [Test]
-        public void ExecuteAndGetRestResponse_NullRequest_ThrowsException()
+        public void ExecuteAndGetRestResponseAsync_NullRequest_ThrowsException()
         {
             var restClient = new RestClient(TestURl);
             var verboseRestClient = new VerboseRestClient(restClient);
 
-            Assert.Throws<ArgumentNullException>(() => verboseRestClient.ExecuteAndGetRestResponse(null));
+            Assert.Throws<ArgumentNullException>(() => verboseRestClient.ExecuteAndGetRestResponseAsync(null).GetAwaiter().GetResult());
         }
 
         [TestCase(300)]
@@ -50,14 +50,14 @@ namespace VerboseRestSharpTests
         [TestCase(305)]
         [TestCase(306)]
         [TestCase(307)]
-        public void ExecuteAndGetRestResponse_300RedirectedResponse_ThrowsException(int httpCode)
+        public void ExecuteAndGetRestResponseAsync_300RedirectedResponse_ThrowsException(int httpCode)
         {
             IRestClient badClient = new BadHttpStatusCodeClient((HttpStatusCode)httpCode);
             var verboseRestClient = new VerboseRestClient(badClient);
 
             var request = new RestRequest(Get);
 
-            Assert.Throws<RedirectionException>(() => verboseRestClient.ExecuteAndGetRestResponse(request));
+            Assert.Throws<RedirectionException>(() => verboseRestClient.ExecuteAndGetRestResponseAsync(request).GetAwaiter().GetResult());
         }
 
         [TestCase(400)]
@@ -77,36 +77,36 @@ namespace VerboseRestSharpTests
         [TestCase(416)]
         [TestCase(417)]
         [TestCase(426)]
-        public void ExecuteAndGetRestResponse_400BadRequestResponse_ThrowsException(int httpCode)
+        public void ExecuteAndGetRestResponseAsync_400BadRequestResponse_ThrowsException(int httpCode)
         {
             IRestClient badClient = new BadHttpStatusCodeClient((HttpStatusCode)httpCode);
             var verboseRestClient = new VerboseRestClient(badClient);
 
             var request = new RestRequest(Get);
 
-            Assert.Throws<BadRequestException>(() => verboseRestClient.ExecuteAndGetRestResponse(request));
+            Assert.Throws<BadRequestException>(() => verboseRestClient.ExecuteAndGetRestResponseAsync(request).GetAwaiter().GetResult());
         }
 
         [Test]
-        public void ExecuteAndGetRestResponse_404NotFoundResponse_ThrowsException()
+        public void ExecuteAndGetRestResponseAsync_404NotFoundResponse_ThrowsException()
         {
             IRestClient badClient = new BadHttpStatusCodeClient(HttpStatusCode.NotFound);
             var verboseRestClient = new VerboseRestClient(badClient);
 
             var request = new RestRequest(Get);
 
-            Assert.Throws<ResourceNotFoundException>(() => verboseRestClient.ExecuteAndGetRestResponse(request));
+            Assert.Throws<ResourceNotFoundException>(() => verboseRestClient.ExecuteAndGetRestResponseAsync(request).GetAwaiter().GetResult());
         }
 
         [Test]
-        public void ExecuteAndGetRestResponse_408RequestTimeoutResponse_ThrowsException()
+        public void ExecuteAndGetRestResponseAsync_408RequestTimeoutResponse_ThrowsException()
         {
             IRestClient badClient = new BadHttpStatusCodeClient(HttpStatusCode.RequestTimeout);
             var verboseRestClient = new VerboseRestClient(badClient);
 
             var request = new RestRequest(Get);
 
-            Assert.Throws<RequestTimeoutException>(() => verboseRestClient.ExecuteAndGetRestResponse(request));
+            Assert.Throws<RequestTimeoutException>(() => verboseRestClient.ExecuteAndGetRestResponseAsync(request).GetAwaiter().GetResult());
         }
 
         [TestCase(500)]
@@ -115,25 +115,25 @@ namespace VerboseRestSharpTests
         [TestCase(503)]
         [TestCase(504)]
         [TestCase(505)]
-        public void ExecuteAndGetRestResponse_500InternalServerResponse_ThrowsException(int httpCode)
+        public void ExecuteAndGetRestResponseAsync_500InternalServerResponse_ThrowsException(int httpCode)
         {
             IRestClient badClient = new BadHttpStatusCodeClient((HttpStatusCode)httpCode);
             var verboseRestClient = new VerboseRestClient(badClient);
 
             var request = new RestRequest(Get);
 
-            Assert.Throws<InternalServerErrorException>(() => verboseRestClient.ExecuteAndGetRestResponse(request));
+            Assert.Throws<InternalServerErrorException>(() => verboseRestClient.ExecuteAndGetRestResponseAsync(request).GetAwaiter().GetResult());
         }
 
         [Test]
-        public void ExecuteAndGetRestResponse_UnableToConnectToServer_ThrowsException()
+        public void ExecuteAndGetRestResponseAsync_RequestThrowingException_ThrowsException()
         {
             IRestClient badClient = new ThrowingClient();
             var verboseRestClient = new VerboseRestClient(badClient);
 
             var request = new RestRequest(Get);
 
-            Assert.Throws<RequestFailedException>(() => verboseRestClient.ExecuteAndGetRestResponse(request));
+            Assert.Throws<RequestFailedException>(() => verboseRestClient.ExecuteAndGetRestResponseAsync(request).GetAwaiter().GetResult());
         }
     }
 }

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using VerboseRestSharp.Exceptions;
 
 namespace VerboseRestSharp
@@ -26,7 +28,7 @@ namespace VerboseRestSharp
             _restClient = restClient ?? throw new ArgumentNullException(nameof(restClient));
         }
 
-        public IRestResponse ExecuteAndGetRestResponse(IRestRequest request)
+        public async Task<IRestResponse> ExecuteAndGetRestResponseAsync(IRestRequest request, CancellationToken token = default)
         {
             if (request == null)
             {
@@ -37,7 +39,7 @@ namespace VerboseRestSharp
             IRestResponse response = null;
             try
             {
-                response = _restClient.Execute(request);
+                response = await _restClient.ExecuteAsync(request, request.Method, token);
             }
             catch (Exception e)
             {
