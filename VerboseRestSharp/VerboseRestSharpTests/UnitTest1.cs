@@ -23,11 +23,5 @@ namespace VerboseRestSharpTests
         {
             Assert.Throws<ArgumentException>(() => new VerboseRestClient((RestClient)null));
         }
-
-        [Test]
-        public void Constructor_NullRestClient_ThrowsException()
-        {
-            Assert.Throws<ArgumentException>(() => new VerboseRestClient((RestClient)null));
-        }
     }
 }

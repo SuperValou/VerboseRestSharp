@@ -1,10 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace VerboseRestSharp.Exceptions
 {
+    /// <summary>
+    /// Base exception thrown by VerboseRestSharp.
+    /// </summary>
     public class VerboseRestSharpException : Exception
     {
+        public VerboseRestSharpException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
     }
 }

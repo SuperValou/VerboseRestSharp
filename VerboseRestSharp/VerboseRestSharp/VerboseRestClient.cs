@@ -1,5 +1,6 @@
 ﻿using RestSharp;
 using System;
+using VerboseRestSharp.Exceptions;
 
 namespace VerboseRestSharp
 {
@@ -20,13 +21,29 @@ namespace VerboseRestSharp
             _restClient = restClient ?? throw new ArgumentNullException(nameof(restClient));
         }
 
-        public IRestResponse ExecuteAndGetRestResponse(IRestRequest request)
+        public IRestResponse ExecuteAndGetRestResponse(IRestRequest restRequest)
         {
-            if (request == null)
+            if (restRequest == null)
             {
-                throw new ArgumentNullException(nameof(request));
+                throw new ArgumentNullException(nameof(restRequest));
             }
 
+            IRestResponse restResponse = null;
+            try
+            {
+                restResponse = _restClient.Execute(restRequest);
+            }
+            catch (Exception e)
+            {
+                string errorMessage = BuildDetailedErrorMessage(restRequest, restResponse);
+                throw new RestRequestFailedException($"Exception occured while executing Rest request. {errorMessage}", restRequest, restResponse, e);
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private string BuildDetailedErrorMessage(IRestRequest restRequest, IRestResponse restResponse)
+        {
             throw new NotImplementedException();
         }
     }
