@@ -42,7 +42,7 @@ namespace VerboseRestSharp
             catch (Exception e)
             {
                 string errorMessage = BuildDetailedErrorMessage(request, response);
-                throw new RestRequestFailedException($"Exception occured during request execution. Details: {errorMessage}", request, response, e);
+                throw new RequestFailedException($"Exception occured during request execution. Details: {errorMessage}", request, response, e);
             }
 
             // ensure response is fine
@@ -55,7 +55,7 @@ namespace VerboseRestSharp
                 }
 
                 string errorMessage = BuildDetailedErrorMessage(request, response);
-                throw new RestRequestFailedException($"Exception occured while getting response. Details: {errorMessage}", request, response, response?.ErrorException);
+                throw new RequestFailedException($"Exception occured while getting response. Details: {errorMessage}", request, response, response?.ErrorException);
             }
 
             // ensure response code is fine
@@ -111,10 +111,10 @@ namespace VerboseRestSharp
                     case HttpStatusCode.ServiceUnavailable:
                     case HttpStatusCode.GatewayTimeout:
                     case HttpStatusCode.HttpVersionNotSupported:
-                        throw new ServerErrorException(errorMessage, request, response);
+                        throw new InternalServerErrorException(errorMessage, request, response);
                 }
 
-                throw new RestRequestFailedException(errorMessage, request, response, response?.ErrorException);
+                throw new RequestFailedException(errorMessage, request, response, response?.ErrorException);
             }
 
             return response;
