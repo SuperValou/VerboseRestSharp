@@ -122,6 +122,18 @@ namespace VerboseRestSharp
             return response;
         }
 
+        public async Task<string> ExecuteAndGetStringResponseAsync(IRestRequest request, CancellationToken token = default)
+        {
+            IRestResponse response = await ExecuteAndGetRestResponseAsync(request, token);
+            return response.Content ?? string.Empty;
+        }
+
+        public async Task<byte[]> ExecuteAndGetRawBytesResponseAsync(IRestRequest request, CancellationToken token = default)
+        {
+            IRestResponse response = await ExecuteAndGetRestResponseAsync(request, token);
+            return response.RawBytes ?? new byte[0];
+        }
+
         private string BuildDetailedErrorMessage(IRestRequest restRequest, IRestResponse restResponse)
         {
             var builder = new StringBuilder();
