@@ -24,7 +24,7 @@ namespace VerboseRestSharpTests.BadClients
         public int ReadWriteTimeout { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public bool UseSynchronizationContext { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public IAuthenticator Authenticator { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Uri BaseUrl { get; set; } = new Uri("http://geodu.de");
+        public virtual Uri BaseUrl { get; set; } = new Uri("http://geodu.de");
         public Encoding Encoding { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public bool ThrowOnDeserializationError { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public bool FailOnDeserializationError { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -54,9 +54,9 @@ namespace VerboseRestSharpTests.BadClients
             throw new NotImplementedException();
         }
 
-        public Uri BuildUri(IRestRequest request)
+        public virtual Uri BuildUri(IRestRequest request)
         {
-            throw new NotImplementedException();
+            return BaseUrl;
         }
 
         public string BuildUriWithoutQueryParameters(IRestRequest request)

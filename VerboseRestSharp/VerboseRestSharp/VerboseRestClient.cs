@@ -64,7 +64,7 @@ namespace VerboseRestSharp
             IRestResponse<TObject> response = null;
             try
             {
-                response = await _restClient.ExecuteAsync<TObject>(request);
+                response = await _restClient.ExecuteAsync<TObject>(request, token);
             }
             catch (Exception e)
             {
@@ -77,7 +77,7 @@ namespace VerboseRestSharp
 
             if (response.Data == null && throwIfNull)
             {
-                throw new NullResponseObjectException(typeof(TObject));
+                throw new NullResponseObjectException(typeof(TObject), request, response, response.ErrorException);
             }
 
             return response.Data;
@@ -88,7 +88,7 @@ namespace VerboseRestSharp
             IRestResponse response = await ExecuteAndGetRestResponseAsync(request, token);
             if (response.Content == null && throwIfNull)
             {
-                throw new NullResponseObjectException(typeof(string));
+                throw new NullResponseObjectException(typeof(string), request, response, response.ErrorException);
             }
 
             return response.Content;
@@ -99,7 +99,7 @@ namespace VerboseRestSharp
             IRestResponse response = await ExecuteAndGetRestResponseAsync(request, token);
             if (response.RawBytes == null && throwIfNull)
             {
-                throw new NullResponseObjectException(typeof(byte[])); ;
+                throw new NullResponseObjectException(typeof(byte[]), request, response, response.ErrorException); ;
             }
 
             return response.RawBytes;
@@ -111,9 +111,9 @@ namespace VerboseRestSharp
             if (response == null || response.ResponseStatus != ResponseStatus.Completed)
             {
                 if (response?.ErrorException?.InnerException is SocketException socketException
-                    && socketException.SocketErrorCode == SocketError.ConnectionRefused)
+                    && socketException.SocketErrorCode != SocketError.Success)
                 {
-                    throw new ConnectionRefusedException(request, response, socketException);
+                    throw new SocketErrorException(socketException.SocketErrorCode, request, response, socketException);
                 }
 
                 string errorMessage = BuildDetailedErrorMessage(request, response);
@@ -136,15 +136,15 @@ namespace VerboseRestSharp
                     case HttpStatusCode.UseProxy:
                     case HttpStatusCode.Unused:
                     case HttpStatusCode.TemporaryRedirect:
-                        throw new RedirectionException(errorMessage, request, response);
+                        throw new RedirectionException(errorMessage, request, response, response.ErrorException);
 
 
                     // 4xx - Client error
                     case HttpStatusCode.NotFound:
-                        throw new ResourceNotFoundException(errorMessage, request, response);
+                        throw new ResourceNotFoundException(errorMessage, request, response, response.ErrorException);
 
                     case HttpStatusCode.RequestTimeout:
-                        throw new RequestTimeoutException(errorMessage, request, response);
+                        throw new RequestTimeoutException(errorMessage, request, response, response.ErrorException);
 
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Unauthorized:
@@ -164,7 +164,7 @@ namespace VerboseRestSharp
                     case HttpStatusCode.RequestedRangeNotSatisfiable:
                     case HttpStatusCode.ExpectationFailed:
                     case HttpStatusCode.UpgradeRequired:
-                        throw new BadRequestException(errorMessage, request, response);
+                        throw new BadRequestException(errorMessage, request, response, response.ErrorException);
 
                     // 5xx - Server error
                     case HttpStatusCode.InternalServerError:
@@ -173,10 +173,10 @@ namespace VerboseRestSharp
                     case HttpStatusCode.ServiceUnavailable:
                     case HttpStatusCode.GatewayTimeout:
                     case HttpStatusCode.HttpVersionNotSupported:
-                        throw new InternalServerErrorException(errorMessage, request, response);
+                        throw new InternalServerErrorException(errorMessage, request, response, response.ErrorException);
                 }
 
-                throw new RequestFailedException(errorMessage, request, response, response?.ErrorException);
+                throw new WrongHttpStatusCodeException(errorMessage, request, response, response.ErrorException);
             }
         }
 
@@ -198,7 +198,7 @@ namespace VerboseRestSharp
                 }
                 catch (Exception)
                 {
-                    fullUri = _restClient.BaseUrl.ToString() + restRequest.Resource;
+                    fullUri = restRequest.Resource;
                 }                
             }
 
