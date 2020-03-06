@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>0.8.0</Version>
+    <Authors>SuperValou</Authors>
+    <Company>Polychrome</Company>
+    <PackageProjectUrl>https://github.com/SuperValou/VerboseRestSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/SuperValou/VerboseRestSharp</RepositoryUrl>
+    <Description>RestSharp, but with explicit exceptions and error messages.</Description>
   </PropertyGroup>
 
   <ItemGroup>
