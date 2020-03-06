@@ -269,7 +269,7 @@ namespace VerboseRestSharpTests
 
             var request = CreateRequest();
 
-            var exception = Assert.Throws<NullResponseObjectException>(() => verboseRestClient.ExecuteAndGetStringAsync(request).GetAwaiter().GetResult());
+            var exception = Assert.Throws<NullDeserializedObjectException>(() => verboseRestClient.ExecuteAndGetStringAsync(request).GetAwaiter().GetResult());
             Assert.AreEqual(typeof(string), exception.ExpectedType);
             Assert.IsNotNull(exception.Request);
             Assert.IsNotNull(exception.Response);
@@ -299,7 +299,7 @@ namespace VerboseRestSharpTests
 
             var request = CreateRequest();
 
-            var exception = Assert.Throws<NullResponseObjectException>(() => verboseRestClient.ExecuteAndGetRawBytesAsync(request).GetAwaiter().GetResult());
+            var exception = Assert.Throws<NullDeserializedObjectException>(() => verboseRestClient.ExecuteAndGetRawBytesAsync(request).GetAwaiter().GetResult());
             Assert.AreEqual(typeof(byte[]), exception.ExpectedType);
             Assert.IsNotNull(exception.Request);
             Assert.IsNotNull(exception.Response);
@@ -352,7 +352,7 @@ namespace VerboseRestSharpTests
 
             var request = CreateRequest();
 
-            var exception = Assert.Throws<NullResponseObjectException>(() => verboseRestClient.ExecuteAndGetAsync<ValidJsonResponse>(request).GetAwaiter().GetResult());
+            var exception = Assert.Throws<NullDeserializedObjectException>(() => verboseRestClient.ExecuteAndGetAsync<ValidJsonResponse>(request).GetAwaiter().GetResult());
             Assert.AreEqual(typeof(ValidJsonResponse), exception.ExpectedType);
             Assert.IsNotNull(exception.Request);
             Assert.IsNotNull(exception.Response);

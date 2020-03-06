@@ -77,7 +77,7 @@ namespace VerboseRestSharp
 
             if (response.Data == null && throwIfNull)
             {
-                throw new NullResponseObjectException(typeof(TObject), request, response, response.ErrorException);
+                throw new NullDeserializedObjectException(typeof(TObject), request, response, response.ErrorException);
             }
 
             return response.Data;
@@ -88,7 +88,7 @@ namespace VerboseRestSharp
             IRestResponse response = await ExecuteAndGetRestResponseAsync(request, token);
             if (response.Content == null && throwIfNull)
             {
-                throw new NullResponseObjectException(typeof(string), request, response, response.ErrorException);
+                throw new NullDeserializedObjectException(typeof(string), request, response, response.ErrorException);
             }
 
             return response.Content;
@@ -99,7 +99,7 @@ namespace VerboseRestSharp
             IRestResponse response = await ExecuteAndGetRestResponseAsync(request, token);
             if (response.RawBytes == null && throwIfNull)
             {
-                throw new NullResponseObjectException(typeof(byte[]), request, response, response.ErrorException); ;
+                throw new NullDeserializedObjectException(typeof(byte[]), request, response, response.ErrorException); ;
             }
 
             return response.RawBytes;

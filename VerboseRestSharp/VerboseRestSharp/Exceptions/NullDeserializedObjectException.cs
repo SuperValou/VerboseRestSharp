@@ -3,11 +3,11 @@ using RestSharp;
 
 namespace VerboseRestSharp.Exceptions
 {
-    public class NullResponseObjectException : RequestFailedException
+    public class NullDeserializedObjectException : RequestFailedException
     {
         public Type ExpectedType { get; }
 
-        public NullResponseObjectException(Type expectedType, IRestRequest request, IRestResponse response, Exception innerException) 
+        public NullDeserializedObjectException(Type expectedType, IRestRequest request, IRestResponse response, Exception innerException) 
             : base($"The expected '{expectedType?.Name}' object was null.", request, response, innerException)
         {
             ExpectedType = expectedType;
